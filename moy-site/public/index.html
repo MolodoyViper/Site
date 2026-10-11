@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Связь поколений — Беларусь в годы Великой Отечественной войны</title>
+<style>
+  :root{
+    --gold:#d4a24c;
+    --dark:#0e0e10;
+    --dark2:#16161a;
+    --red:#8b1e1e;
+    --paper:#f5efe1;
+    --text:#e8e2d5;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Georgia', serif;
+    background:var(--dark);
+    color:var(--text);
+    overflow-x:hidden;
+    line-height:1.7;
+  }
+
+  #preloader{
+    position:fixed;inset:0;background:var(--dark);
+    display:flex;align-items:center;justify-content:center;
+    z-index:9999;flex-direction:column;gap:20px;
+    transition:opacity .8s ease, visibility .8s;
+  }
+  #preloader.hide{opacity:0;visibility:hidden;}
+  .flame{
+    width:40px;height:60px;
+    background:radial-gradient(circle at 50% 80%, #ffdb70, #ff8a00 40%, #b23a00 70%, transparent 75%);
+    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation:flicker 1.2s infinite ease-in-out;
+    filter:blur(1px);
+  }
+  @keyframes flicker{
+    0%,100%{transform:scale(1) rotate(-2deg);opacity:.95;}
+    50%{transform:scale(1.15) rotate(2deg);opacity:1;}
+  }
+  #preloader p{letter-spacing:4px;font-size:14px;color:var(--gold);}
+
+  nav{
+    position:fixed;top:0;left:0;width:100%;
+    padding:18px 40px;
+    display:flex;justify-content:space-between;align-items:center;
+    background:rgba(14,14,16,.85);
+    backdrop-filter:blur(10px);
+    z-index:1000;
+    border-bottom:1px solid rgba(212,162,76,.2);
+    transition:all .4s;
+  }
+  nav .logo{font-size:18px;letter-spacing:3px;color:var(--gold);font-weight:bold;}
+  nav ul{display:flex;gap:32px;list-style:none;}
+  nav ul a{
+    color:var(--text);text-decoration:none;font-size:14px;letter-spacing:1.5px;
+    position:relative;transition:color .3s;
+  }
+  nav ul a::after{
+    content:'';position:absolute;left:0;bottom:-6px;width:0;height:2px;
+    background:var(--gold);transition:width .35s;
+  }
+  nav ul a:hover{color:var(--gold);}
+  nav ul a:hover::after{width:100%;}
+  .burger{display:none;font-size:26px;cursor:pointer;color:var(--gold);}
+
+  header{
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;position:relative;
+    padding:120px 20px 60px;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(139,30,30,.35), transparent 60%),
+      linear-gradient(to bottom, #0e0e10, #16161a);
+    overflow:hidden;
+  }
+  header::before{
+    content:'';position:absolute;inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0 1px, transparent 1px 4px);
+    pointer-events:none;
+  }
+  .hero-title{
+    font-size:clamp(38px, 7vw, 92px);
+    letter-spacing:6px;
+    color:var(--paper);
+    text-shadow:0 0 40px rgba(212,162,76,.3);
+    opacity:0;transform:translateY(40px);
+    animation:riseUp 1.4s .3s forwards;
+    line-height:1.1;
+  }
+  .hero-title span{color:var(--gold);}
+  .hero-sub{
+    margin-top:26px;font-size:clamp(15px,2vw,21px);
+    max-width:760px;color:#bfb8a8;font-style:italic;
+    opacity:0;transform:translateY(30px);
+    animation:riseUp 1.4s .8s forwards;
+  }
+  .hero-line{
+    width:0;height:2px;background:var(--gold);margin-top:36px;
+    animation:lineGrow 1.6s 1.4s forwards;
+  }
+  @keyframes lineGrow{to{width:220px;}}
+  @keyframes riseUp{to{opacity:1;transform:translateY(0);}}
+  .scroll-hint{
+    position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+    color:var(--gold);font-size:13px;letter-spacing:3px;
+    animation:bounce 2s infinite;
+  }
+  @keyframes bounce{0%,100%{transform:translate(-50%,0);}50%{transform:translate(-50%,12px);}}
+
+  section{padding:110px 40px;max-width:1200px;margin:0 auto;}
+  .section-head{text-align:center;margin-bottom:70px;}
+  .section-head h2{
+    font-size:clamp(28px,4vw,46px);letter-spacing:3px;color:var(--paper);
+    position:relative;display:inline-block;
+  }
+  .section-head h2::after{
+    content:'';display:block;width:80px;height:3px;background:var(--gold);
+    margin:20px auto 0;
+  }
+  .section-head p{margin-top:22px;color:#9a9384;font-style:italic;font-size:17px;}
+
+  .reveal{opacity:0;transform:translateY(50px);transition:opacity 1s ease, transform 1s ease;}
+  .reveal.active{opacity:1;transform:translateY(0);}
+
+  .stories{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;}
+  .card{
+    background:linear-gradient(160deg,#1b1b20,#121215);
+    border:1px solid rgba(212,162,76,.15);
+    border-radius:6px;padding:0;overflow:hidden;
+    cursor:pointer;transition:transform .45s, box-shadow .45s, border-color .45s;
+    position:relative;
+  }
+  .card:hover{
+    transform:translateY(-10px);
+    box-shadow:0 24px 50px rgba(0,0,0,.7);
+    border-color:rgba(212,162,76,.55);
+  }
+  .card-img{
+    height:200px;
+    background-size:cover;background-position:center;
+    position:relative;
+    filter:grayscale(60%);
+    transition:filter .5s, transform .6s;
+  }
+  .card:hover .card-img{filter:grayscale(0%);transform:scale(1.05);}
+  .card-img::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(to top, #121215 5%, transparent 70%);
+  }
+  .card-body{padding:26px 26px 30px;}
+  .card-body h3{color:var(--gold);font-size:21px;margin-bottom:12px;letter-spacing:1px;}
+  .card-body p{font-size:15px;color:#b3ac9d;}
+  .card-body .more{
+    display:inline-block;margin-top:18px;color:var(--gold);font-size:13px;
+    letter-spacing:2px;border-bottom:1px solid transparent;transition:border-color .3s;
+  }
+  .card:hover .more{border-color:var(--gold);}
+
+  .modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.85);
+    display:flex;align-items:center;justify-content:center;
+    z-index:2000;opacity:0;visibility:hidden;transition:.4s;padding:20px;
+    backdrop-filter:blur(6px);
+  }
+  .modal.open{opacity:1;visibility:visible;}
+  .modal-content{
+    background:var(--dark2);max-width:680px;width:100%;
+    border:1px solid rgba(212,162,76,.4);border-radius:8px;
+    padding:44px;max-height:85vh;overflow-y:auto;
+    transform:scale(.9);transition:transform .4s;
+  }
+  .modal.open .modal-content{transform:scale(1);}
+  .modal-content h3{color:var(--gold);font-size:26px;margin-bottom:20px;letter-spacing:1px;}
+  .modal-content p{margin-bottom:16px;color:#cfc8b9;}
+  .modal-content .close{
+    float:right;font-size:26px;color:var(--gold);cursor:pointer;line-height:1;
+  }
+  .modal-content .close:hover{color:#fff;}
+
+  .timeline{position:relative;max-width:900px;margin:0 auto;padding:20px 0;}
+  .timeline::before{
+    content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;
+    background:linear-gradient(to bottom, transparent, var(--gold), transparent);
+    transform:translateX(-50%);
+  }
+  .tl-item{
+    position:relative;width:50%;padding:20px 40px;margin-bottom:20px;
+  }
+  .tl-item:nth-child(odd){left:0;text-align:right;}
+  .tl-item:nth-child(even){left:50%;text-align:left;}
+  .tl-item::after{
+    content:'';position:absolute;top:32px;width:16px;height:16px;
+    background:var(--dark);border:3px solid var(--gold);border-radius:50%;
+    transition:background .3s, box-shadow .3s;
+  }
+  .tl-item:nth-child(odd)::after{right:-8px;}
+  .tl-item:nth-child(even)::after{left:-8px;}
+  .tl-item:hover::after{background:var(--gold);box-shadow:0 0 20px var(--gold);}
+  .tl-item h4{color:var(--gold);font-size:19px;letter-spacing:1px;margin-bottom:6px;}
+  .tl-item p{font-size:14px;color:#a8a192;}
+  .tl-date{font-size:13px;color:#7d7768;letter-spacing:2px;}
+
+  .quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px;}
+  .quote{
+    background:rgba(212,162,76,.05);
+    border-left:3px solid var(--gold);
+    padding:28px 30px;border-radius:0 6px 6px 0;
+    transition:background .4s, transform .4s;
+  }
+  .quote:hover{background:rgba(212,162,76,.12);transform:translateX(6px);}
+  .quote p{font-style:italic;font-size:16px;color:#d8d1c1;margin-bottom:14px;}
+  .quote span{color:var(--gold);font-size:14px;letter-spacing:1px;}
+
+  #ai-btn{
+    position:fixed;bottom:30px;right:30px;z-index:1500;
+    width:66px;height:66px;border-radius:50%;
+    background:linear-gradient(135deg,var(--gold),#8a5a1a);
+    border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;color:#1a1a1a;
+    box-shadow:0 8px 30px rgba(212,162,76,.5);
+    transition:transform .35s, box-shadow .35s;
+    animation:pulseBtn 2.5s infinite;
+  }
+  #ai-btn:hover{transform:scale(1.12);box-shadow:0 10px 44px rgba(212,162,76,.8);}
+  @keyframes pulseBtn{
+    0%,100%{box-shadow:0 8px 30px rgba(212,162,76,.5);}
+    50%{box-shadow:0 8px 46px rgba(212,162,76,.9);}
+  }
+
+  #ai-panel{
+    position:fixed;bottom:110px;right:30px;z-index:1500;
+    width:380px;max-width:calc(100vw - 40px);
+    height:520px;max-height:calc(100vh - 160px);
+    background:var(--dark2);
+    border:1px solid rgba(212,162,76,.4);
+    border-radius:12px;overflow:hidden;
+    display:flex;flex-direction:column;
+    box-shadow:0 24px 60px rgba(0,0,0,.8);
+    transform:translateY(30px) scale(.95);opacity:0;visibility:hidden;
+    transition:.4s cubic-bezier(.2,.8,.3,1);
+  }
+  #ai-panel.open{transform:translateY(0) scale(1);opacity:1;visibility:visible;}
+  .ai-head{
+    padding:16px 20px;background:linear-gradient(135deg,#2a1f10,#1a1408);
+    border-bottom:1px solid rgba(212,162,76,.3);
+    display:flex;align-items:center;gap:12px;
+  }
+  .ai-head .dot{
+    width:10px;height:10px;border-radius:50%;background:#5ddc6b;
+    box-shadow:0 0 10px #5ddc6b;animation:blink 1.6s infinite;
+  }
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .ai-head h3{font-size:15px;color:var(--gold);letter-spacing:1px;flex:1;}
+  .ai-head .close-ai{cursor:pointer;color:var(--gold);font-size:22px;line-height:1;}
+  .ai-head .close-ai:hover{color:#fff;}
+  #ai-messages{
+    flex:1;overflow-y:auto;padding:20px;
+    display:flex;flex-direction:column;gap:14px;
+    scrollbar-width:thin;scrollbar-color:var(--gold) transparent;
+  }
+  #ai-messages::-webkit-scrollbar{width:6px;}
+  #ai-messages::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
+  .msg{max-width:85%;padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.6;animation:msgIn .4s ease;}
+  @keyframes msgIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+  .msg.bot{background:rgba(212,162,76,.12);border:1px solid rgba(212,162,76,.25);color:#e8e2d5;align-self:flex-start;border-bottom-left-radius:3px;}
+  .msg.user{background:linear-gradient(135deg,var(--gold),#8a5a1a);color:#1a1a1a;align-self:flex-end;border-bottom-right-radius:3px;font-weight:500;}
+  .ai-quick{
+    display:flex;gap:8px;padding:0 20px 14px;flex-wrap:wrap;
+  }
+  .ai-quick button{
+    background:transparent;border:1px solid rgba(212,162,76,.45);
+    color:var(--gold);font-size:12px;padding:7px 12px;border-radius:16px;
+    cursor:pointer;transition:.3s;font-family:inherit;
+  }
+  .ai-quick button:hover{background:rgba(212,162,76,.15);}
+  .ai-input{
+    display:flex;border-top:1px solid rgba(212,162,76,.25);
+  }
+  .ai-input input{
+    flex:1;background:transparent;border:none;outline:none;
+    padding:16px 20px;color:var(--text);font-family:inherit;font-size:14px;
+  }
+  .ai-input button{
+    background:var(--gold);border:none;color:#1a1a1a;
+    padding:0 22px;cursor:pointer;font-weight:bold;font-size:18px;
+    transition:background .3s;font-family:inherit;
+  }
+  .ai-input button:hover{background:#f0c874;}
+  .typing{display:inline-block;color:var(--gold);}
+  .typing::after{content:'▋';animation:caret .8s infinite;}
+  @keyframes caret{0%,100%{opacity:1;}50%{opacity:0;}}
+
+  footer{
+    text-align:center;padding:60px 20px;border-top:1px solid rgba(212,162,76,.2);
+    color:#6b6558;font-size:14px;letter-spacing:1px;
+  }
+  footer .gold{color:var(--gold);}
+
+  @media(max-width:820px){
+    nav ul{
+      position:fixed;top:64px;right:0;background:var(--dark2);
+      flex-direction:column;padding:30px;gap:22px;
+      transform:translateX(100%);transition:.4s;
+      border-left:1px solid rgba(212,162,76,.3);height:100vh;
+    }
+    nav ul.open{transform:translateX(0);}
+    .burger{display:block;}
+    .timeline::before{left:20px;}
+    .tl-item{width:100%;left:0 !important;text-align:left !important;padding-left:60px;padding-right:10px;}
+    .tl-item::after{left:12px !important;right:auto !important;}
+    section{padding:80px 22px;}
+    #ai-panel{right:16px;left:16px;width:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div id="preloader">
+  <div class="flame"></div>
+  <p>ПОМНИМ...</p>
+</div>
+
+<nav>
+  <div class="logo">БЕЛАРУСЬ · 1941–1945</div>
+  <ul id="navMenu">
+    <li><a href="#stories">Истории</a></li>
+    <li><a href="#timeline">Хроника</a></li>
+    <li><a href="#quotes">Голоса</a></li>
+    <li><a href="#memory">Связь поколений</a></li>
+  </ul>
+  <div class="burger" id="burger">☰</div>
+</nav>
+
+<header>
+  <h1 class="hero-title">СВЯЗЬ <span>ПОКОЛЕНИЙ</span></h1>
+  <p class="hero-sub">Беларусь в годы Великой Отечественной войны. Мы помним каждого — и передаём память дальше.</p>
+  <div class="hero-line"></div>
+  <div class="scroll-hint">▼ ЛИСТАЙТЕ ВНИЗ ▼</div>
+</header>
+
+<section id="stories">
+  <div class="section-head reveal">
+    <h2>ЖИВЫЕ ИСТОРИИ</h2>
+    <p>Судьбы людей, чьи имена хранит белорусская земля</p>
+  </div>
+  <div class="stories">
+
+    <div class="card reveal" data-title="Брестская крепость" data-story="22 июня 1941 года в 4 часа утра гарнизон Брестской крепости одним из первых принял удар немецких войск. Защитники, оказавшись в полном окружении без воды и боеприпасов, держались почти месяц. На стенах крепости до сих пор находят надписи: «Умираю, но не сдаюсь. Прощай, Родина!». Гарнизон крепости стал символом несокрушимого духа. В 1965 году Брестской крепости присвоено звание «Крепость-герой».">
+      <div class="card-img" style="background-image:url('images/brest.jpg')"></div>
+      <div class="card-body">
+        <h3>Брестская крепость</h3>
+        <p>Первые часы войны. Месяц сопротивления в полном окружении без воды и надежды.</p>
+        <span class="more">ЧИТАТЬ ИСТОРИЮ →</span>
+      </div>
+    </div>
+
+    <div class="card reveal" data-title="Хатынь" data-story="22 марта 1943 года каратели уничтожили деревню Хатынь в Логойском районе Минской области. Все жители — 149 человек, из них 75 детей — были сожжены заживо в сарае. Спастись удалось лишь нескольким. Хатынь стала символом судьбы более 600 белорусских деревень, разделивших её участь. На месте деревни открыт мемориальный комплекс — один из самых скорбных памятников мира. Единственный уцелевший свидетель — Иосиф Каминский, чей образ увековечен в бронзе.">
+      <div class="card-img" style="background-image:url('images/khatyn.jpg')"></div>
+      <div class="card-body">
+        <h3>Хатынь</h3>
+        <p>149 жизней, 75 детей. Символ трагедии сотен белорусских деревень.</p>
+        <span class="more">ЧИТАТЬ ИСТОРИЮ →</span>
+      </div>
+    </div>
+
+    <div class="card reveal" data-title="Марат Казей" data-story="Марат Казей — юный разведчик партизанского отряда, погиб в 14 лет в мае 1944 года. Окружённый врагами, он подорвал себя гранатой вместе с фашистами. Марат стал Героем Советского Союза — одним из самых молодых. В Минске ему установлен памятник. Его сестра Ариадна тоже была партизанкой. Судьба Марата — это история детей войны, которых в Беларуси были тысячи.">
+      <div class="card-img" style="background-image:url('images/kazey.jpg')"></div>
+      <div class="card-body">
+        <h3>Марат Казей</h3>
+        <p>14-летний разведчик, шагнувший в бессмертие. Герой Советского Союза.</p>
+        <span class="more">ЧИТАТЬ ИСТОРИЮ →</span>
+      </div>
+    </div>
+
+    <div class="card reveal" data-title="«Рельсовая война»" data-story="С 3 августа по 15 сентября 1943 года белорусские партизаны провели знаменитую «Рельсовую войну» — третью фазу операции. Было подорвано более 120 тысяч рельсов. В Беларуси действовало крупнейшее партизанское движение в Европе — более 374 тысяч партизан и подпольщиков. Партизаны контролировали целые районы — «партизанские зоны». Немцы боялись лесов Беларуси и называли их «землёй партизан».">
+      <div class="card-img" style="background-image:url('images/rails.jpg')"></div>
+      <div class="card-body">
+        <h3>«Рельсовая война»</h3>
+        <p>374 тысячи партизан. Крупнейшее партизанское движение в Европе.</p>
+        <span class="more">ЧИТАТЬ ИСТОРИЮ →</span>
+      </div>
+    </div>
+
+    <div class="card reveal" data-title="Операция «Багратион»" data-story="Летом 1944 года Красная Армия провела операцию «Багратион» — одну из крупнейших наступательных операций в истории. 23 июня 1944 года началось освобождение Беларуси. 3 июля был освобождён Минск — в «котле» под Минском оказалось более 100 тысяч немецких солдат. Беларусь была освобождена за 2 месяца. 16 июля 1944 года в Минске прошёл парад партизан. День Независимости Беларуси отмечается 3 июля — в честь освобождения Минска.">
+      <div class="card-img" style="background-image:url('images/bagration.jpg')"></div>
+      <div class="card-body">
+        <h3>Операция «Багратион»</h3>
+        <p>Освобождение Беларуси за 2 месяца. Парад партизан в Минске.</p>
+        <span class="more">ЧИТАТЬ ИСТОРИЮ →</span>
+      </div>
+    </div>
+
+    <div class="card reveal" data-title="Калинковичско-Мозырская операция" data-story="14 января 1944 года в ходе Калинковичско-Мозырской наступательной операции был освобождён Мозырь — один из первых крупных городов восточной Беларуси, освобождённых до «Багратиона». Город был оккупирован с 22 августа 1941 года. В районе Мозыря активно действовала Мозырская партизанская бригада. Освобождение Мозыря и Калинковичей стало важным шагом к полному освобождению Беларуси.">
+      <div class="card-img" style="background-image:url('images/mozyr.jpg')"></div>
+      <div class="card-body">
+        <h3>Калинковичско-Мозырская операция</h3>
+        <p>14 января 1944 — освобождение Мозыря. Шаг к полному освобождению.</p>
+        <span class="more">ЧИТАТЬ ИСТОРИЮ →</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="section-head reveal">
+    <h2>ХРОНИКА ВОЙНЫ</h2>
+    <p>Ключевые даты для Беларуси</p>
+  </div>
+  <div class="timeline">
+    <div class="tl-item reveal">
+      <div class="tl-date">22 ИЮНЯ 1941</div>
+      <h4>Начало войны</h4>
+      <p>Брестская крепость принимает первый удар. Начало оккупации Беларуси.</p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-date">ИЮНЬ 1941 — ИЮЛЬ 1944</div>
+      <h4>Оккупация</h4>
+      <p>Три года оккупации. Более 9200 сожжённых деревень. Партизанское движение.</p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-date">1942–1943</div>
+      <h4>Расцвет партизанского движения</h4>
+      <p>Партизанские зоны, «Рельсовая война», подполье в городах.</p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-date">14 ЯНВАРЯ 1944</div>
+      <h4>Освобождение Мозыря</h4>
+      <p>Калинковичско-Мозырская операция — первые крупные освобождённые города.</p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-date">23 ИЮНЯ 1944</div>
+      <h4>Операция «Багратион»</h4>
+      <p>Начало освобождения Беларуси. Разгром группы армий «Центр».</p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-date">3 ИЮЛЯ 1944</div>
+      <h4>Освобождение Минска</h4>
+      <p>День Независимости Республики Беларусь. «Минский котёл».</p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-date">16 ИЮЛЯ 1944</div>
+      <h4>Парад партизан</h4>
+      <p>В Минске прошёл парад партизан — символ народной победы.</p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-date">9 МАЯ 1945</div>
+      <h4>Победа</h4>
+      <p>Беларусь потеряла каждого третьего жителя. Но выстояла.</p>
+    </div>
+  </div>
+</section>
+
+<section id="quotes">
+  <div class="section-head reveal">
+    <h2>ГОЛОСА ПАМЯТИ</h2>
+    <p>Слова, которые нельзя забыть</p>
+  </div>
+  <div class="quotes">
+    <div class="quote reveal">
+      <p>«Умираю, но не сдаюсь. Прощай, Родина!»</p>
+      <span>— надпись на стене Брестской крепости</span>
+    </div>
+    <div class="quote reveal">
+      <p>«Мы не знали, что такое страх. Мы знали, что такое Родина.»</p>
+      <span>— партизанка, ветеран</span>
+    </div>
+    <div class="quote reveal">
+      <p>«Беларусь потеряла каждого третьего. Но память — сильнее смерти.»</p>
+      <span>— из воспоминаний освободителей</span>
+    </div>
+    <div class="quote reveal">
+      <p>«Пока мы помним — они живы.»</p>
+      <span>— народная мудрость</span>
+    </div>
+  </div>
+</section>
+
+<section id="memory">
+  <div class="section-head reveal">
+    <h2>СВЯЗЬ ПОКОЛЕНИЙ</h2>
+    <p>Память — это мост между прошлым и будущим</p>
+  </div>
+  <div class="reveal" style="max-width:820px;margin:0 auto;text-align:center;font-size:17px;color:#b3ac9d;line-height:1.9;">
+    <p style="margin-bottom:24px;">В Беларуси нет ни одной семьи, которой не коснулась бы война. Память о ней передаётся от бабушек и дедушек к внукам и правнукам — в рассказах, фотографиях, письмах с фронта.</p>
+    <p style="margin-bottom:24px;">Эта связь поколений — не просто слова. Это обещание: помнить, чтить, передавать дальше. Чтобы никогда больше.</p>
+    <p style="color:var(--gold);font-style:italic;font-size:19px;">«Мы — последнее поколение, которое слышит голоса ветеранов. И первое, которое должно сохранить их для будущего.»</p>
+  </div>
+</section>
+
+<footer>
+  <p>СВЯЗЬ ПОКОЛЕНИЙ · <span class="gold">БЕЛАРУСЬ 1941–1945</span></p>
+  <p style="margin-top:12px;font-size:13px;">Помним. Чтим. Передаём дальше.</p>
+</footer>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" id="modalClose">×</span>
+    <h3 id="modalTitle"></h3>
+    <p id="modalText"></p>
+  </div>
+</div>
+
+<button id="ai-btn" title="ИИ-помощник">✦</button>
+<div id="ai-panel">
+  <div class="ai-head">
+    <div class="dot"></div>
+    <h3>ИИ-ПОМОЩНИК · БЕЛАРУСЬ</h3>
+    <span class="close-ai" id="aiClose">×</span>
+  </div>
+  <div id="ai-messages"></div>
+  <div class="ai-quick">
+    <button data-q="Расскажи случайный факт о войне в Беларуси">Случайный факт</button>
+    <button data-q="Расскажи о партизанах Беларуси">О партизанах</button>
+    <button data-q="Что такое Хатынь?">О Хатыни</button>
+    <button data-q="Что такое операция Багратион?">О «Багратионе»</button>
+    <button data-q="Расскажи про битву под Мозырем">О Мозыре</button>
+  </div>
+  <div class="ai-input">
+    <input type="text" id="aiInput" placeholder="Спросите о войне в Беларуси...">
+    <button id="aiSend">➤</button>
+  </div>
+</div>
+
+<script>
+window.addEventListener('load', ()=>{
+  setTimeout(()=>document.getElementById('preloader').classList.add('hide'), 1400);
+});
+
+document.getElementById('burger').onclick = ()=>{
+  document.getElementById('navMenu').classList.toggle('open');
+};
+document.querySelectorAll('#navMenu a').forEach(a=>{
+  a.onclick = ()=>document.getElementById('navMenu').classList.remove('open');
+});
+
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('active');
+      io.unobserve(e.target);
+    }
+  });
+},{threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+const modal = document.getElementById('modal');
+document.querySelectorAll('.card').forEach(card=>{
+  card.onclick = ()=>{
+    document.getElementById('modalTitle').textContent = card.dataset.title;
+    document.getElementById('modalText').textContent = card.dataset.story;
+    modal.classList.add('open');
+  };
+});
+document.getElementById('modalClose').onclick = ()=>modal.classList.remove('open');
+modal.onclick = (e)=>{ if(e.target===modal) modal.classList.remove('open'); };
+
+const aiMessages = document.getElementById('ai-messages');
+const aiInput = document.getElementById('aiInput');
+let aiBusy = false;
+
+function addMsg(text, who='bot'){
+  const d = document.createElement('div');
+  d.className = 'msg ' + who;
+  d.textContent = text;
+  aiMessages.appendChild(d);
+  aiMessages.scrollTop = aiMessages.scrollHeight;
+  return d;
+}
+
+function addTyping(){
+  const d = document.createElement('div');
+  d.className = 'msg bot';
+  d.innerHTML = '<span class="typing"></span>';
+  aiMessages.appendChild(d);
+  aiMessages.scrollTop = aiMessages.scrollHeight;
+  return d;
+}
+
+async function sendAi(text){
+  if(!text.trim() || aiBusy) return;
+  aiBusy = true;
+  addMsg(text, 'user');
+  aiInput.value = '';
+  const typingEl = addTyping();
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    });
+    const data = await res.json();
+    typingEl.remove();
+    if(data.answer){
+      addMsg(data.answer, 'bot');
+    } else {
+      addMsg('Ошибка: ' + (data.error || 'не удалось получить ответ'), 'bot');
+    }
+  } catch(err){
+    typingEl.remove();
+    addMsg('Сервер недоступен. Убедитесь, что запущен server.js.', 'bot');
+  }
+  aiBusy = false;
+}
+
+document.getElementById('aiSend').onclick = ()=>sendAi(aiInput.value);
+aiInput.addEventListener('keydown', e=>{ if(e.key==='Enter') sendAi(aiInput.value); });
+
+document.querySelectorAll('.ai-quick button').forEach(b=>{
+  b.onclick = ()=>sendAi(b.dataset.q);
+});
+
+const aiPanel = document.getElementById('ai-panel');
+document.getElementById('ai-btn').onclick = ()=>{
+  aiPanel.classList.toggle('open');
+  if(aiPanel.classList.contains('open') && aiMessages.children.length === 0){
+    addMsg("Здравствуйте! Я ИИ-помощник по истории Великой Отечественной войны в Беларуси. Спросите меня о партизанах, Хатыни, Брестской крепости, Мозыре или попросите случайный факт.", 'bot');
+  }
+};
+document.getElementById('aiClose').onclick = ()=>aiPanel.classList.remove('open');
+</script>
+</body>
+</html>
